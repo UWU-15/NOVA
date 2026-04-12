@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Градиентный фон -->
+    <ImageView
+        android:id="@+id/gradientBg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/gradient_bg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Верхний левый PNG -->
+    <ImageView
+        android:id="@+id/linesTopLeft"
+        android:layout_width="550dp"
+        android:layout_height="500dp"
+        android:layout_marginStart="-175dp"
+        android:layout_marginTop="-130dp"
+        android:alpha="1"
+        android:src="@drawable/lines2_2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/linesBottomRight"
+        android:layout_width="550dp"
+        android:layout_height="500dp"
+        android:layout_marginEnd="-175dp"
+        android:layout_marginBottom="-130dp"
+        android:alpha="1"
+        android:src="@drawable/lines2_1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Фон для контента по центру -->
+    <ImageView
+        android:id="@+id/contentBackground"
+        android:layout_width="350dp"
+        android:layout_height="400dp"
+        android:src="@drawable/back_window_1"
+        android:scaleType="fitXY"
+        android:alpha="1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Заголовок -->
+
+    <!-- Поле ввода Email (расстояние 16dp от заголовка) -->
+
+    <TextView
+        android:id="@+id/titleText"
+        android:layout_width="271dp"
+        android:layout_height="84dp"
+        android:layout_marginTop="80dp"
+        android:fontFamily="@font/zen_dots"
+        android:gravity="center"
+        android:text="Recovery password"
+        android:textColor="#0A0A20"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@id/contentBackground"
+        app:layout_constraintHorizontal_bias="0.493"
+        app:layout_constraintStart_toStartOf="@id/contentBackground"
+        app:layout_constraintTop_toTopOf="@id/contentBackground" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/emailLayout"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:hint="Email"
+        app:boxBackgroundMode="outline"
+        app:boxStrokeColor="#0A0A20"
+        app:boxCornerRadiusTopStart="4dp"
+        app:boxCornerRadiusTopEnd="4dp"
+        app:boxCornerRadiusBottomStart="4dp"
+        app:boxCornerRadiusBottomEnd="4dp"
+        app:layout_constraintTop_toBottomOf="@id/titleText"
+        app:layout_constraintStart_toStartOf="@id/contentBackground"
+        app:layout_constraintEnd_toEndOf="@id/contentBackground">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/emailInput"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:fontFamily="@font/zen_dots"
+            android:inputType="textEmailAddress"
+            android:padding="12dp"
+            android:textColor="#0A0A20" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Кнопка Send Link (расстояние 16dp от поля email) -->
+    <Button
+        android:id="@+id/sendLinkButton"
+        android:layout_width="180dp"
+        android:layout_height="55dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/zen_dots"
+        android:text="Send link"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        app:backgroundTint="#A600FF"
+        app:cornerRadius="4dp"
+        app:layout_constraintEnd_toEndOf="@id/contentBackground"
+        app:layout_constraintStart_toStartOf="@id/contentBackground"
+        app:layout_constraintTop_toBottomOf="@id/emailLayout" />
+
+    <!-- Back to Sign In (расстояние 24dp от кнопки Send Link, чуть ниже) -->
+    <Button
+        android:id="@+id/backToSignInButton"
+        android:layout_width="143dp"
+        android:layout_height="34dp"
+        android:background="@android:color/transparent"
+        android:clickable="true"
+        android:focusable="true"
+        android:fontFamily="@font/zen_dots"
+        android:padding="1dp"
+        android:text="Back to sign in"
+        android:textColor="#0A0A20"
+        android:textSize="14sp"
+        app:backgroundTint="@android:color/transparent"
+        app:layout_constraintEnd_toEndOf="@id/contentBackground"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="@id/contentBackground"
+        app:layout_constraintTop_toBottomOf="@id/sendLinkButton" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

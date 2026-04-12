@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "179927760710",
+    "project_id": "nova-cccd7",
+    "storage_bucket": "nova-cccd7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:179927760710:android:a7f66a0d4ccef01a632f47",
+        "android_client_info": {
+          "package_name": "com.example.nova"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvzlwIvWNpurAYaJU5MORxrVvqGGKfq6M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

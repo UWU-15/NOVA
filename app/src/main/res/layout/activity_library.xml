@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0A0A20">
+
+    <ImageView
+        android:layout_width="415dp"
+        android:layout_height="785dp"
+        android:alpha="0.4"
+        android:scaleType="centerCrop"
+        android:src="@drawable/gradient_bg_1" />
+
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="40dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="#FFFFFF" />
+
+    <TextView
+        android:id="@+id/tvLibraryTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:fontFamily="@font/zen_dots"
+        android:text="Library"
+        android:textColor="#FFFFFF"
+        android:textSize="30sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnBack" />
+
+    <View
+        android:id="@+id/titleUnderline"
+        android:layout_width="250dp"
+        android:layout_height="2dp"
+        android:layout_marginTop="8dp"
+        android:background="#A600FF"
+        app:layout_constraintStart_toStartOf="@id/tvLibraryTitle"
+        app:layout_constraintTop_toBottomOf="@id/tvLibraryTitle" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginHorizontal="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/titleUnderline">
+
+        <ImageView
+            android:id="@+id/folderBackground"
+            android:layout_width="505dp"
+            android:layout_height="910dp"
+            android:layout_marginHorizontal="0dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/back_window_2"
+            tools:layout_editor_absoluteX="-47dp"
+            tools:layout_editor_absoluteY="-37dp" />
+
+        <TextView
+            android:id="@+id/btnAddPlaylist"
+            android:layout_width="58dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/zen_dots"
+            android:includeFontPadding="false"
+            android:text="+"
+            android:textColor="#000000"
+            android:textSize="50sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvPlaylists"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="70dp"
+            android:paddingHorizontal="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:listitem="@layout/item_track_main" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

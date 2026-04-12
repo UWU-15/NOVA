@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/trackItemContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:paddingVertical="12dp"
+    android:paddingStart="24dp"
+    android:paddingEnd="0dp">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/trackPlayCard"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        app:cardBackgroundColor="#A600FF"
+        app:cardCornerRadius="23dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/ivTrackPlayIcon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="12dp"
+            android:src="@android:drawable/ic_media_play"
+            app:tint="#FFFFFF" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/tvTrackTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:fontFamily="@font/zen_dots"
+        android:text="Song Title"
+        android:textColor="#0A0A20"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@id/tvTrackDuration"
+        app:layout_constraintStart_toEndOf="@id/trackPlayCard"
+        app:layout_constraintTop_toTopOf="@id/trackPlayCard" />
+
+    <TextView
+        android:id="@+id/tvTrackArtist"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:fontFamily="@font/zen_dots"
+        android:text="Artist Name"
+        android:textColor="#0A0A20"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@id/tvTrackTitle"
+        app:layout_constraintStart_toStartOf="@id/tvTrackTitle"
+        app:layout_constraintTop_toBottomOf="@id/tvTrackTitle" />
+
+    <TextView
+        android:id="@+id/tvTrackDuration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="@font/zen_dots"
+        android:text="0:00"
+        android:textColor="#0A0A20"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/ivTrackFavorite"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/ivTrackFavorite"
+        android:layout_width="32dp"
+        android:layout_height="34dp"
+        android:layout_marginEnd="20dp"
+        android:src="@drawable/ic_like"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="#0A0A20" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
