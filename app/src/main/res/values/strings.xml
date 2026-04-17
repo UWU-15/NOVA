@@ -9,4 +9,8 @@
     <string name="register_now">Not a member? Register now</string>
     <string name="send_link">Send link</string>
     <string name="back_to_sign_in">Back to Sign In</string>
+    <string name="register">Register</string>
+    <string name="create_account">Create Account</string>
+    <string name="not_account">Do you have an account? Sign in</string>
+    <string name="name">Name</string>
 </resources>
