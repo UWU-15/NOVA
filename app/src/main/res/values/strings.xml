@@ -3,6 +3,10 @@
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="sign_in">Sign In</string>
+    <string name="recovery_1">Recovery</string>
+    <string name="recovery_2">password</string>
     <string name="recovery">Recovery password</string>
     <string name="register_now">Not a member? Register now</string>
+    <string name="send_link">Send link</string>
+    <string name="back_to_sign_in">Back to Sign In</string>
 </resources>
