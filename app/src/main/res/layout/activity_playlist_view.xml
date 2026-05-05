@@ -5,144 +5,133 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0A0A20">
+    android:background="@color/dark_blue">
 
+    <!-- Фон -->
     <ImageView
-        android:id="@+id/whiteBg"
+        android:id="@+id/bg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="140dp"
-        android:scaleType="fitXY"
-        android:src="@drawable/back_window_3"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:scaleType="centerCrop"
+        android:alpha="0.5"
+        android:src="@drawable/gradient_bg_1"/>
 
+    <!-- APP BAR -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
         android:layout_width="match_parent"
-        android:layout_height="420dp"
+        android:layout_height="wrap_content"
         android:background="@android:color/transparent"
         app:elevation="0dp">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingTop="20dp">
+                android:layout_height="wrap_content"
+                android:paddingBottom="16dp">
 
+                <!-- Back -->
                 <ImageButton
                     android:id="@+id/btnBack"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="28dp"
+                    android:layout_marginTop="20dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@drawable/ic_back"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:tint="#FFFFFF" />
+                    app:layout_constraintTop_toTopOf="parent"/>
 
+                <!-- Playlist icon -->
                 <ImageView
-                    android:id="@+id/playlistCustomWidget"
-                    android:layout_width="140dp"
-                    android:layout_height="140dp"
-                    android:layout_marginStart="28dp"
-                    android:layout_marginTop="60dp"
+                    android:id="@+id/playlistIcon"
+                    android:layout_width="110dp"
+                    android:layout_height="110dp"
+                    android:layout_marginTop="20dp"
                     android:src="@drawable/ic_music"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/btnBack" />
+                    app:layout_constraintTop_toBottomOf="@id/btnBack"/>
 
+                <!-- Name -->
                 <TextView
                     android:id="@+id/tvPlaylistName"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
                     android:fontFamily="@font/zen_dots"
-                    android:text="Name Playlist"
-                    android:textColor="#0A0A20"
-                    android:textSize="30sp"
-                    app:layout_constraintStart_toStartOf="@id/playlistCustomWidget"
-                    app:layout_constraintTop_toBottomOf="@id/playlistCustomWidget" />
+                    android:text="Playlist"
+                    android:textColor="@android:color/white"
+                    android:textSize="26sp"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    app:layout_constraintStart_toEndOf="@id/playlistIcon"
+                    app:layout_constraintTop_toTopOf="@id/playlistIcon"
+                    app:layout_constraintEnd_toStartOf="@id/rightPanel"/>
 
+                <!-- Right controls -->
                 <LinearLayout
+                    android:id="@+id/rightPanel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="20dp"
-                    android:gravity="center"
                     android:orientation="vertical"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:gravity="center"
+                    android:layout_marginEnd="16dp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/playlistCustomWidget">
+                    app:layout_constraintTop_toTopOf="@id/playlistIcon"
+                    app:layout_constraintBottom_toBottomOf="@id/playlistIcon">
 
                     <ImageButton
-                        android:layout_width="48dp"
-                        android:layout_height="42dp"
+                        android:id="@+id/btnMenu"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:background="@android:color/transparent"
                         android:src="@drawable/ic_menu_more"
-                        app:tint="#0A0A20" />
+                        app:tint="@android:color/white"/>
 
                     <com.google.android.material.floatingactionbutton.FloatingActionButton
                         android:id="@+id/btnPlay"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginVertical="8dp"
+                        android:layout_marginVertical="10dp"
                         android:src="@android:drawable/ic_media_play"
-                        app:backgroundTint="#A600FF"
                         app:fabSize="mini"
-                        app:tint="#FFFFFF" />
+                        app:backgroundTint="@color/purple"/>
 
                     <ImageButton
                         android:id="@+id/btnShuffle"
-                        android:layout_width="48dp"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_shuffle"/>
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@android:color/transparent"
+                        android:src="@drawable/ic_shuffle"
+                        app:tint="@android:color/white"/>
 
                     <ImageButton
                         android:id="@+id/btnRepeat"
-                        android:layout_width="48dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
-                        android:src="@drawable/ic_repeate" />
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@android:color/transparent"
+                        android:src="@drawable/ic_repeate"
+                        app:tint="@android:color/white"/>
                 </LinearLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.core.widget.NestedScrollView
+    <!-- LIST -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvSongsInPlaylist"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginHorizontal="32dp"
-        app:behavior_overlapTop="40dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/blueBg"
-                android:layout_width="match_parent"
-                android:layout_height="1200dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/back_window_3"
-                app:layout_constraintTop_toTopOf="parent"
-                app:tint="#2A2A82" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvSongsInPlaylist"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="45dp"
-                android:nestedScrollingEnabled="false"
-                app:layout_constraintTop_toTopOf="@id/blueBg"
-                tools:listitem="@layout/item_track"/>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.core.widget.NestedScrollView>
+        android:paddingTop="12dp"
+        android:paddingHorizontal="20dp"
+        android:clipToPadding="false"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:listitem="@layout/item_track"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

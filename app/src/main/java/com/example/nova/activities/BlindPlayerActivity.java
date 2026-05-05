@@ -1,4 +1,3 @@
-// BlindPlayerActivity.java
 package com.example.nova.activities;
 
 import android.content.ComponentName;
@@ -12,7 +11,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.nova.R;
 import com.example.nova.services.MusicPlayerService;
 
@@ -25,15 +26,20 @@ public class BlindPlayerActivity extends AppCompatActivity {
 
     private MusicPlayerService musicService;
     private boolean isBound = false;
+
     private Handler progressHandler = new Handler();
 
-    private ServiceConnection serviceConnection = new ServiceConnection() {
+    private boolean isRevealed = false;
+
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             MusicPlayerService.MusicBinder binder = (MusicPlayerService.MusicBinder) service;
             musicService = binder.getService();
             isBound = true;
-            updateUI();
+
+            loadTrack();
+            startProgressLoop();
         }
 
         @Override
@@ -52,7 +58,6 @@ public class BlindPlayerActivity extends AppCompatActivity {
 
         Intent intent = new Intent(this, MusicPlayerService.class);
         bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-        setupProgressUpdates();
     }
 
     private void initViews() {
@@ -60,73 +65,120 @@ public class BlindPlayerActivity extends AppCompatActivity {
         btnBlindDislike = findViewById(R.id.btnBlindDislike);
         btnBlindLike = findViewById(R.id.btnBlindLike);
         btnBlindPlayPause = findViewById(R.id.btnBlindPlayPause);
+
         ivFullArt = findViewById(R.id.ivFullArt);
         albumFrame = findViewById(R.id.albumFrame);
         albumGlow = findViewById(R.id.albumGlow);
+
         tvFullTitle = findViewById(R.id.tvFullTitle);
         tvFullArtist = findViewById(R.id.tvFullArtist);
         tvCurrentTime = findViewById(R.id.tvCurrentTime);
         tvTotalTime = findViewById(R.id.tvTotalTime);
+
         playerSeekBar = findViewById(R.id.playerSeekBar);
+
+        hideTrackInfo();
     }
 
     private void setupClickListeners() {
+
         btnBack.setOnClickListener(v -> finish());
 
         btnBlindPlayPause.setOnClickListener(v -> {
-            if (musicService != null) {
-                if (musicService.isPlaying()) {
-                    musicService.pause();
-                    btnBlindPlayPause.setImageResource(android.R.drawable.ic_media_play);
-                } else {
-                    musicService.play();
-                    btnBlindPlayPause.setImageResource(android.R.drawable.ic_media_pause);
-                }
+            if (musicService == null) return;
+
+            if (musicService.isPlaying()) {
+                musicService.pause();
+                btnBlindPlayPause.setImageResource(android.R.drawable.ic_media_play);
+            } else {
+                musicService.play();
+                btnBlindPlayPause.setImageResource(android.R.drawable.ic_media_pause);
             }
         });
 
         btnBlindLike.setOnClickListener(v -> {
-            if (musicService != null) {
-                // Toggle like
-                btnBlindLike.setColorFilter(0xFFA600FF);
-            }
+            if (musicService == null) return;
+
+            musicService.likeCurrentTrack();
+
+            revealTrackInfo();
         });
 
         btnBlindDislike.setOnClickListener(v -> {
-            if (musicService != null) {
-                musicService.next();
-                updateUI();
-            }
+            if (musicService == null) return;
+
+            musicService.dislikeCurrentTrack();
+            nextTrack();
         });
     }
 
-    private void updateUI() {
-        if (musicService != null && musicService.getCurrentTrack() != null) {
-            tvFullTitle.setText(musicService.getCurrentTrack().getTitle());
-            tvFullArtist.setText(musicService.getCurrentTrack().getArtistName());
-            tvTotalTime.setText(musicService.getCurrentTrack().getFormattedDuration());
+    private void loadTrack() {
+        if (musicService == null) return;
 
-            int duration = musicService.getDuration();
-            playerSeekBar.setMax(duration);
-            playerSeekBar.setProgress(musicService.getCurrentPosition());
-            tvCurrentTime.setText(formatTime(musicService.getCurrentPosition() / 1000));
+        musicService.prepareNextFromTags();
 
-            if (musicService.isPlaying()) {
-                btnBlindPlayPause.setImageResource(android.R.drawable.ic_media_pause);
-            } else {
-                btnBlindPlayPause.setImageResource(android.R.drawable.ic_media_play);
-            }
-        }
+        updateSeekBar();
+        updatePlayButton();
     }
 
-    private void setupProgressUpdates() {
+    private void nextTrack() {
+        if (musicService == null) return;
+
+        isRevealed = false;
+        hideTrackInfo();
+
+        musicService.next();
+        loadTrack();
+    }
+
+    private void revealTrackInfo() {
+        if (musicService == null || musicService.getCurrentTrack() == null) return;
+
+        isRevealed = true;
+
+        tvFullTitle.setText(musicService.getCurrentTrack().getTitle());
+        tvFullArtist.setText(musicService.getCurrentTrack().getArtistName());
+        tvTotalTime.setText(musicService.getCurrentTrack().getFormattedDuration());
+
+        ivFullArt.setVisibility(ImageView.VISIBLE);
+        albumFrame.setAlpha(1f);
+        albumGlow.setAlpha(0.8f);
+    }
+
+    private void hideTrackInfo() {
+        tvFullTitle.setText("?");
+        tvFullArtist.setText("Unknown");
+
+        ivFullArt.setVisibility(ImageView.INVISIBLE);
+        albumFrame.setAlpha(0.4f);
+        albumGlow.setAlpha(0.3f);
+    }
+
+    private void updateSeekBar() {
+        if (musicService == null) return;
+
+        playerSeekBar.setMax(musicService.getDuration());
+        playerSeekBar.setProgress(musicService.getCurrentPosition());
+    }
+
+    private void updatePlayButton() {
+        if (musicService == null) return;
+
+        btnBlindPlayPause.setImageResource(
+                musicService.isPlaying()
+                        ? android.R.drawable.ic_media_pause
+                        : android.R.drawable.ic_media_play
+        );
+    }
+
+    private void startProgressLoop() {
         progressHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (musicService != null && musicService.isPlaying()) {
-                    int currentPosition = musicService.getCurrentPosition();
-                    playerSeekBar.setProgress(currentPosition);
-                    tvCurrentTime.setText(formatTime(currentPosition / 1000));
+                if (musicService != null) {
+                    int pos = musicService.getCurrentPosition();
+                    playerSeekBar.setProgress(pos);
+                    tvCurrentTime.setText(formatTime(pos / 1000));
                 }
                 progressHandler.postDelayed(this, 1000);
             }
@@ -134,17 +186,17 @@ public class BlindPlayerActivity extends AppCompatActivity {
     }
 
     private String formatTime(int seconds) {
-        int minutes = seconds / 60;
-        int secs = seconds % 60;
-        return String.format("%d:%02d", minutes, secs);
+        return String.format("%d:%02d", seconds / 60, seconds % 60);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
         if (isBound) {
             unbindService(serviceConnection);
         }
+
         progressHandler.removeCallbacksAndMessages(null);
     }
 }

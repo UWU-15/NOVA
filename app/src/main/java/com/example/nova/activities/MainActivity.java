@@ -1,151 +1,108 @@
-// MainActivity.java
 package com.example.nova.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.Toast;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ProgressBar;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.nova.R;
-import com.example.nova.adapters.DeezerTrackAdapter;
-import com.example.nova.api.DeezerApiService;
-import com.example.nova.api.RetrofitClient;
-import com.example.nova.models.DeezerTrack;
-import com.example.nova.models.User;
-import com.example.nova.services.FirebaseService;
+import com.example.nova.adapters.SongAdapter;
+import com.example.nova.activities.cache.TrackCache;
+import com.example.nova.models.Track;
+import com.example.nova.activities.repository.MusicRepository;
+import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerView songsRecyclerView;
-    private DeezerTrackAdapter trackAdapter;
-    private DeezerApiService apiService;
-    private FirebaseService firebaseService;
-    private List<String> userGenres;
+    private SongAdapter adapter;
+    private MusicRepository repository;
+
+    private ProgressBar progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        apiService = RetrofitClient.getInstance().getApiService();
-        firebaseService = FirebaseService.getInstance();
+        repository = new MusicRepository();
 
-        initRecyclerView();
-        loadUserGenres();
-    }
-
-    private void initRecyclerView() {
-        songsRecyclerView = findViewById(R.id.songsRecyclerView);
-        trackAdapter = new DeezerTrackAdapter();
-        trackAdapter.setDarkTheme(false);
-        trackAdapter.setOnTrackClickListener(new DeezerTrackAdapter.OnTrackClickListener() {
-            @Override
-            public void onTrackClick(DeezerTrack track, int position) {
-                // Will implement player later
-                Toast.makeText(MainActivity.this, "Playing: " + track.getTitle(), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onLikeClick(DeezerTrack track, int position) {
-                toggleLike(track, position);
-            }
-        });
-        songsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        songsRecyclerView.setAdapter(trackAdapter);
-    }
-
-    private void loadUserGenres() {
-        String userId = firebaseService.getCurrentUser().getUid();
-        firebaseService.getUserData(userId, new FirebaseService.OnUserDataListener() {
-            @Override
-            public void onSuccess(User user) {
-                userGenres = user.getFavoriteGenres();
-                if (userGenres != null && !userGenres.isEmpty()) {
-                    loadRecommendationsByGenres();
-                } else {
-                    loadChartTracks(); // fallback to charts
-                }
-            }
-
-            @Override
-            public void onFailure(String error) {
-                Log.e("MainActivity", "Error loading user: " + error);
-                loadChartTracks(); // fallback
-            }
-        });
-    }
-
-    private void loadRecommendationsByGenres() {
-        // For now, load chart tracks
-        // In real implementation, you would call an API that filters by genres
-        // Deezer API doesn't have direct genre recommendations, so we use charts as placeholder
-        loadChartTracks();
-
-        // TODO: Implement genre-based recommendations using Deezer's editorial playlists
-        // or using a recommendation algorithm on the backend
-    }
-
-    private void loadChartTracks() {
-        apiService.getChartTracks().enqueue(new retrofit2.Callback<DeezerApiService.ChartResponse>() {
-            @Override
-            public void onResponse(retrofit2.Call<DeezerApiService.ChartResponse> call,
-                                   retrofit2.Response<DeezerApiService.ChartResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    List<DeezerTrack> tracks = response.body().getTracks();
-                    trackAdapter.setTracks(tracks);
-                    Log.d("MainActivity", "Tracks loaded: " + tracks.size());
-                } else {
-                    Log.e("MainActivity", "Server error: " + response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(retrofit2.Call<DeezerApiService.ChartResponse> call, Throwable t) {
-                Log.e("MainActivity", "Network error: " + t.getMessage());
-                Toast.makeText(MainActivity.this, "Network error", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void toggleLike(DeezerTrack track, int position) {
-        boolean newLikeState = !track.isLiked();
-        track.setLiked(newLikeState);
-        trackAdapter.notifyItemChanged(position);
-
-        String userId = firebaseService.getCurrentUser().getUid();
-        String trackId = String.valueOf(track.getId());
-
-        if (newLikeState) {
-            firebaseService.addLikedSong(userId, trackId, new FirebaseService.OnUpdateListener() {
-                @Override
-                public void onSuccess() {
-                    Toast.makeText(MainActivity.this, "Added to favorites", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onFailure(String error) {
-                    Toast.makeText(MainActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show();
-                    track.setLiked(false);
-                    trackAdapter.notifyItemChanged(position);
-                }
-            });
+        if (!TrackCache.isEmpty()) {
+            setContentView(R.layout.activity_main);
+            initViews();
+            initRecycler();
+            adapter.setTracks(TrackCache.get());
+            showContent();
         } else {
-            firebaseService.removeLikedSong(userId, trackId, new FirebaseService.OnUpdateListener() {
-                @Override
-                public void onSuccess() {
-                    Toast.makeText(MainActivity.this, "Removed from favorites", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onFailure(String error) {
-                    Toast.makeText(MainActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show();
-                    track.setLiked(true);
-                    trackAdapter.notifyItemChanged(position);
-                }
-            });
+            setContentView(R.layout.activity_main);
+            initViews();
+            initRecycler();
+            loadTracks();
         }
+    }
+
+    private void initViews() {
+        songsRecyclerView = findViewById(R.id.songsRecyclerView);
+        progress = findViewById(R.id.progress);
+    }
+
+    private void initRecycler() {
+        adapter = new SongAdapter();
+        songsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        songsRecyclerView.setAdapter(adapter);
+    }
+
+    private void loadTracks() {
+
+        showLoading();
+
+        repository.getTracks().enqueue(new Callback<List<Track>>() {
+
+            @Override
+            public void onResponse(Call<List<Track>> call, Response<List<Track>> response) {
+
+                if (response.isSuccessful() && response.body() != null) {
+
+                    List<Track> tracks = response.body();
+
+                    TrackCache.save(tracks); // 💾 кеш
+
+                    adapter.setTracks(tracks);
+
+                    showContent();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Track>> call, Throwable t) {
+                showError();
+            }
+        });
+    }
+
+    private void showLoading() {
+        progress.setVisibility(View.VISIBLE);
+        songsRecyclerView.setVisibility(View.GONE);
+    }
+
+    private void showContent() {
+        progress.setVisibility(View.GONE);
+        songsRecyclerView.setVisibility(View.VISIBLE);
+    }
+
+    private void showError() {
+        progress.setVisibility(View.GONE);
+        songsRecyclerView.setVisibility(View.VISIBLE);
     }
 }

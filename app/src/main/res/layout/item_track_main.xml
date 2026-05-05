@@ -8,21 +8,21 @@
     android:background="?attr/selectableItemBackground"
     android:paddingVertical="12dp"
     android:paddingStart="24dp"
-    android:paddingEnd="0dp">
+    android:paddingEnd="16dp">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/trackPlayCard"
-        android:layout_width="46dp"
-        android:layout_height="46dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         app:cardBackgroundColor="#A600FF"
-        app:cardCornerRadius="23dp"
+        app:cardCornerRadius="24dp"
         app:cardElevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/ivTrackPlayIcon"
+            android:id="@+id/ivAlbumArt"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="12dp"
@@ -31,7 +31,7 @@
     </com.google.android.material.card.MaterialCardView>
 
     <TextView
-        android:id="@+id/tvTrackTitle"
+        android:id="@+id/tvSongTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -39,12 +39,14 @@
         android:text="Song Title"
         android:textColor="#0A0A20"
         android:textSize="16sp"
+        android:maxLines="1"
+        android:ellipsize="end"
         app:layout_constraintEnd_toStartOf="@id/tvTrackDuration"
         app:layout_constraintStart_toEndOf="@id/trackPlayCard"
         app:layout_constraintTop_toTopOf="@id/trackPlayCard" />
 
     <TextView
-        android:id="@+id/tvTrackArtist"
+        android:id="@+id/tvSongArtist"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
@@ -52,9 +54,12 @@
         android:text="Artist Name"
         android:textColor="#0A0A20"
         android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="@id/tvTrackTitle"
-        app:layout_constraintStart_toStartOf="@id/tvTrackTitle"
-        app:layout_constraintTop_toBottomOf="@id/tvTrackTitle" />
+        android:maxLines="1"
+        android:ellipsize="end"
+        app:layout_constraintBottom_toBottomOf="@id/trackPlayCard"
+        app:layout_constraintEnd_toEndOf="@id/tvSongTitle"
+        app:layout_constraintStart_toStartOf="@id/tvSongTitle"
+        app:layout_constraintTop_toBottomOf="@id/tvSongTitle" />
 
     <TextView
         android:id="@+id/tvTrackDuration"
@@ -65,20 +70,20 @@
         android:text="0:00"
         android:textColor="#0A0A20"
         android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/ivTrackFavorite"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toBottomOf="@id/trackPlayCard"
+        app:layout_constraintEnd_toStartOf="@id/btnLikeButton"
+        app:layout_constraintTop_toTopOf="@id/trackPlayCard" />
 
     <ImageView
-        android:id="@+id/ivTrackFavorite"
+        android:id="@+id/btnLikeButton"
         android:layout_width="32dp"
         android:layout_height="34dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="0dp"
         android:src="@drawable/ic_like"
         android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/trackPlayCard"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@id/trackPlayCard"
         app:tint="#0A0A20" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

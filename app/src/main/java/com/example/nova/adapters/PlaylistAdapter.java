@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.nova.R;
-import com.example.nova.models.Playlist;
+
 import java.util.ArrayList;
 import java.util.List;
 

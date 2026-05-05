@@ -14,10 +14,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.nova.R;
-import com.example.nova.adapters.DeezerTrackAdapter;
-import com.example.nova.api.DeezerApiService;
+import com.example.nova.adapters.SongAdapter;
+import com.example.nova.api.ApiService;
 import com.example.nova.api.RetrofitClient;
-import com.example.nova.models.DeezerTrack;
+
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,8 +29,8 @@ public class SearchActivity extends AppCompatActivity {
     private TextView searchTitle;
     private EditText searchEditText;
     private RecyclerView searchRecyclerView;
-    private DeezerTrackAdapter trackAdapter;
-    private DeezerApiService apiService;
+    private SongAdapter trackAdapter;
+    private ApiService apiService;
     private Handler searchHandler = new Handler(Looper.getMainLooper());
     private Runnable searchRunnable;
 
@@ -46,14 +46,14 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        backButton = findViewById(R.id.backButton);
+        backButton = findViewById(R.id.btnBack);
         searchTitle = findViewById(R.id.searchTitle);
         searchEditText = findViewById(R.id.searchEditText);
         searchRecyclerView = findViewById(R.id.searchRecyclerView);
 
-        trackAdapter = new DeezerTrackAdapter();
+        trackAdapter = new SongAdapter();
         trackAdapter.setDarkTheme(true);
-        trackAdapter.setOnTrackClickListener(new DeezerTrackAdapter.OnTrackClickListener() {
+        trackAdapter.setOnTrackClickListener(new SongAdapter.OnTrackClickListener() {
             @Override
             public void onTrackClick(DeezerTrack track, int position) {
                 // Start player with search results
@@ -102,10 +102,10 @@ public class SearchActivity extends AppCompatActivity {
             return;
         }
 
-        apiService.searchTracks(query).enqueue(new Callback<DeezerApiService.SearchResponse>() {
+        apiService.searchTracks(query).enqueue(new Callback<ApiService.SearchResponse>() {
             @Override
-            public void onResponse(Call<DeezerApiService.SearchResponse> call,
-                                   Response<DeezerApiService.SearchResponse> response) {
+            public void onResponse(Call<ApiService.SearchResponse> call,
+                                   Response<ApiService.SearchResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<DeezerTrack> tracks = response.body().getData();
                     trackAdapter.setTracks(tracks);
@@ -113,7 +113,7 @@ public class SearchActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<DeezerApiService.SearchResponse> call, Throwable t) {
+            public void onFailure(Call<ApiService.SearchResponse> call, Throwable t) {
                 Toast.makeText(SearchActivity.this, "Search failed: " + t.getMessage(),
                         Toast.LENGTH_SHORT).show();
             }

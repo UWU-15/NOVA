@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:background="#0A0A20">
 
     <ImageView
-        android:id="@+id/gradientBg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:alpha="0.3"
+        android:alpha="0.6"
         android:scaleType="centerCrop"
-        android:src="@drawable/gradient_bg_1" />
+        android:src="@drawable/gradient_bg_2"/>
 
     <ImageButton
         android:id="@+id/btnBack"
@@ -22,41 +21,53 @@
         android:layout_marginTop="30dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/ic_back"
+        app:tint="#FFFFFF"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="#FFFFFF" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
         android:id="@+id/likedTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
-        android:layout_marginTop="10dp"
-        android:fontFamily="@font/zen_dots"
+        android:layout_marginTop="16dp"
         android:text="Favorites"
-        android:textColor="#FFFFFF"
-        android:textSize="30sp"
+        android:textColor="@color/white_text"
+        android:textSize="28sp"
+        android:fontFamily="@font/zen_dots"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnBack" />
+        app:layout_constraintTop_toBottomOf="@id/btnBack"/>
 
     <View
         android:id="@+id/titleUnderline"
-        android:layout_width="250dp"
+        android:layout_width="120dp"
         android:layout_height="2dp"
         android:layout_marginTop="6dp"
         android:background="#A600FF"
         app:layout_constraintStart_toStartOf="@id/likedTitle"
-        app:layout_constraintTop_toBottomOf="@id/likedTitle" />
+        app:layout_constraintTop_toBottomOf="@id/likedTitle"/>
+
+    <TextView
+        android:id="@+id/emptyState"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No liked songs yet"
+        android:textColor="#80FFFFFF"
+        android:fontFamily="@font/zen_dots"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/titleUnderline"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/likedRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="20dp"
+        android:paddingHorizontal="20dp"
         android:clipToPadding="false"
-        android:paddingBottom="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/titleUnderline"
-        tools:listitem="@layout/item_track"/>
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

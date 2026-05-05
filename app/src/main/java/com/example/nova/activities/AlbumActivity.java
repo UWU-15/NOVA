@@ -12,11 +12,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.nova.R;
-import com.example.nova.adapters.DeezerTrackAdapter;
-import com.example.nova.api.DeezerApiService;
+import com.example.nova.adapters.SongAdapter;
+import com.example.nova.api.ApiService;
 import com.example.nova.api.RetrofitClient;
-import com.example.nova.models.DeezerAlbum;
-import com.example.nova.models.DeezerTrack;
 import com.example.nova.services.MusicPlayerService;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.List;
@@ -31,8 +29,8 @@ public class AlbumActivity extends AppCompatActivity {
     private TextView tvAlbumName;
     private RecyclerView rvAlbumTracks;
     private FloatingActionButton fabPlayAlbum;
-    private DeezerTrackAdapter trackAdapter;
-    private DeezerApiService apiService;
+    private SongAdapter trackAdapter;
+    private ApiService apiService;
     private DeezerAlbum album;
     private List<DeezerTrack> tracks;
     private long albumId;
@@ -57,9 +55,9 @@ public class AlbumActivity extends AppCompatActivity {
         rvAlbumTracks = findViewById(R.id.rvAlbumTracks);
         fabPlayAlbum = findViewById(R.id.fabPlayAlbum);
 
-        trackAdapter = new DeezerTrackAdapter();
+        trackAdapter = new SongAdapter();
         trackAdapter.setDarkTheme(true);
-        trackAdapter.setOnTrackClickListener(new DeezerTrackAdapter.OnTrackClickListener() {
+        trackAdapter.setOnTrackClickListener(new SongAdapter.OnTrackClickListener() {
             @Override
             public void onTrackClick(DeezerTrack track, int position) {
                 startMusicPlayer(position);
@@ -116,10 +114,10 @@ public class AlbumActivity extends AppCompatActivity {
     private void loadAlbumTracks() {
         // Deezer API doesn't directly return tracks with album, need to fetch tracklist
         // For demo, we'll load chart tracks
-        apiService.getChartTracks().enqueue(new Callback<DeezerApiService.ChartResponse>() {
+        apiService.getChartTracks().enqueue(new Callback<ApiService.ChartResponse>() {
             @Override
-            public void onResponse(Call<DeezerApiService.ChartResponse> call,
-                                   Response<DeezerApiService.ChartResponse> response) {
+            public void onResponse(Call<ApiService.ChartResponse> call,
+                                   Response<ApiService.ChartResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     tracks = response.body().getTracks();
                     if (tracks != null) {
@@ -129,7 +127,7 @@ public class AlbumActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<DeezerApiService.ChartResponse> call, Throwable t) {
+            public void onFailure(Call<ApiService.ChartResponse> call, Throwable t) {
                 Toast.makeText(AlbumActivity.this, "Error loading tracks", Toast.LENGTH_SHORT).show();
             }
         });

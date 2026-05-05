@@ -1,4 +1,3 @@
-// PlaylistViewActivity.java
 package com.example.nova.activities;
 
 import android.content.Intent;
@@ -6,231 +5,155 @@ import android.os.Bundle;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.nova.R;
-import com.example.nova.adapters.DeezerTrackAdapter;
-import com.example.nova.api.DeezerApiService;
-import com.example.nova.api.RetrofitClient;
-import com.example.nova.models.DeezerTrack;
-import com.example.nova.models.Playlist;
-import com.example.nova.models.User;
-import com.example.nova.services.FirebaseService;
+import com.example.nova.adapters.SongAdapter;
+import com.example.nova.models.Track;
 import com.example.nova.services.MusicPlayerService;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.example.nova.supabase.SupabaseClient;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class PlaylistViewActivity extends AppCompatActivity {
 
     private ImageButton btnBack;
     private TextView tvPlaylistName;
     private RecyclerView rvSongsInPlaylist;
-    private FloatingActionButton btnPlay;
-    private DeezerTrackAdapter trackAdapter;
+
+    private SongAdapter adapter;
+
     private String playlistId;
     private String playlistName;
-    private List<DeezerTrack> tracks = new ArrayList<>();
-    private FirebaseService firebaseService;
+
+    private final List<Track> tracks = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_playlist_view);
 
-        firebaseService = FirebaseService.getInstance();
-
-        // Get playlist data from intent
         playlistId = getIntent().getStringExtra("playlist_id");
         playlistName = getIntent().getStringExtra("playlist_name");
 
         initViews();
-        setupClickListeners();
-        loadPlaylistTracks();
+        setupListeners();
+        loadPlaylist();
     }
 
     private void initViews() {
         btnBack = findViewById(R.id.btnBack);
         tvPlaylistName = findViewById(R.id.tvPlaylistName);
         rvSongsInPlaylist = findViewById(R.id.rvSongsInPlaylist);
-        btnPlay = findViewById(R.id.btnPlay);
 
         tvPlaylistName.setText(playlistName != null ? playlistName : "Playlist");
 
-        trackAdapter = new DeezerTrackAdapter();
-        trackAdapter.setDarkTheme(false);
-        trackAdapter.setOnTrackClickListener(new DeezerTrackAdapter.OnTrackClickListener() {
+        adapter = new SongAdapter();
+        adapter.setDarkTheme(false);
+
+        adapter.setOnTrackClickListener(new SongAdapter.OnTrackClickListener() {
             @Override
-            public void onTrackClick(DeezerTrack track, int position) {
-                // Start player with this track and playlist
+            public void onTrackClick(Track track, int position) {
                 playTrack(position);
             }
 
             @Override
-            public void onLikeClick(DeezerTrack track, int position) {
+            public void onLikeClick(Track track, int position) {
                 toggleLike(track, position);
             }
         });
 
         rvSongsInPlaylist.setLayoutManager(new LinearLayoutManager(this));
-        rvSongsInPlaylist.setAdapter(trackAdapter);
+        rvSongsInPlaylist.setAdapter(adapter);
     }
 
-    private void setupClickListeners() {
+    private void setupListeners() {
         btnBack.setOnClickListener(v -> finish());
-
-        btnPlay.setOnClickListener(v -> {
-            if (!tracks.isEmpty()) {
-                playTrack(0);
-            } else {
-                Toast.makeText(this, "No tracks in this playlist", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
-    private void loadPlaylistTracks() {
-        String userId = firebaseService.getCurrentUser().getUid();
+    // =========================
+    // SUPABASE LOAD
+    // =========================
+    private void loadPlaylist() {
+        SupabaseClient.getInstance()
+                .getPlaylistTracks(playlistId, new SupabaseClient.Callback() {
+                    @Override
+                    public void onSuccess(JSONObject response) {
+                        try {
+                            JSONArray arr = response.getJSONArray("tracks");
 
-        firebaseService.getUserPlaylists(userId, new FirebaseService.OnPlaylistsListener() {
-            @Override
-            public void onSuccess(List<Playlist> playlists) {
-                Playlist targetPlaylist = null;
-                for (Playlist playlist : playlists) {
-                    if (playlist.getId().equals(playlistId)) {
-                        targetPlaylist = playlist;
-                        break;
-                    }
-                }
+                            tracks.clear();
 
-                if (targetPlaylist != null) {
-                    List<Long> trackIds = targetPlaylist.getTrackIds();
-                    if (trackIds != null && !trackIds.isEmpty()) {
-                        tracks.clear();
-                        for (Long trackId : trackIds) {
-                            fetchTrack(trackId);
+                            for (int i = 0; i < arr.length(); i++) {
+                                JSONObject obj = arr.getJSONObject(i);
+
+                                Track track = new Track();
+                                track.setId(obj.getString("id"));
+                                track.setTitle(obj.getString("title"));
+                                track.setArtist(obj.optString("artist"));
+                                track.setAudioUrl(obj.getString("audio_url"));
+                                track.setCoverUrl(obj.optString("cover_url"));
+                                track.setLiked(obj.optBoolean("liked", false));
+
+                                tracks.add(track);
+                            }
+
+                            adapter.setTracks(tracks);
+
+                        } catch (Exception e) {
+                            Toast.makeText(PlaylistViewActivity.this,
+                                    "Parse error",
+                                    Toast.LENGTH_SHORT).show();
                         }
-                    } else {
-                        Toast.makeText(PlaylistViewActivity.this, "No tracks in this playlist", Toast.LENGTH_SHORT).show();
-                        trackAdapter.setTracks(tracks);
                     }
-                } else {
-                    Toast.makeText(PlaylistViewActivity.this, "Playlist not found", Toast.LENGTH_SHORT).show();
-                }
-            }
 
-            @Override
-            public void onFailure(String error) {
-                Toast.makeText(PlaylistViewActivity.this, "Error loading playlist: " + error,
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
+                    @Override
+                    public void onError(String error) {
+                        Toast.makeText(PlaylistViewActivity.this,
+                                "Failed to load playlist",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
-    private void fetchTrack(long trackId) {
-        DeezerApiService apiService = RetrofitClient.getInstance().getApiService();
-        apiService.getTrack(trackId).enqueue(new Callback<DeezerTrack>() {
-            @Override
-            public void onResponse(Call<DeezerTrack> call, Response<DeezerTrack> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    DeezerTrack track = response.body();
-                    checkIfTrackIsLiked(track);
-                    tracks.add(track);
-                    trackAdapter.setTracks(new ArrayList<>(tracks));
-                }
-            }
+    // =========================
+    // LIKE (SUPABASE)
+    // =========================
+    private void toggleLike(Track track, int position) {
+        boolean newState = !track.isLiked();
+        track.setLiked(newState);
+        adapter.notifyItemChanged(position);
 
-            @Override
-            public void onFailure(Call<DeezerTrack> call, Throwable t) {
-                Toast.makeText(PlaylistViewActivity.this, "Error loading track: " + t.getMessage(),
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
+        SupabaseClient.getInstance()
+                .setLike(track.getId(), newState, new SupabaseClient.Callback() {
+                    @Override
+                    public void onSuccess(JSONObject response) {}
+
+                    @Override
+                    public void onError(String error) {}
+                });
     }
 
-    private void checkIfTrackIsLiked(DeezerTrack track) {
-        String userId = firebaseService.getCurrentUser().getUid();
-        String trackId = String.valueOf(track.getId());
-
-        firebaseService.getUserData(userId, new FirebaseService.OnUserDataListener() {
-            @Override
-            public void onSuccess(User user) {
-                List<String> likedSongs = user.getLikedSongs();
-                if (likedSongs != null && likedSongs.contains(trackId)) {
-                    track.setLiked(true);
-                    // Refresh adapter to show updated like status
-                    trackAdapter.setTracks(new ArrayList<>(tracks));
-                }
-            }
-
-            @Override
-            public void onFailure(String error) {
-                // Ignore error, track remains not liked
-            }
-        });
-    }
-
-    private void toggleLike(DeezerTrack track, int position) {
-        boolean newLikeState = !track.isLiked();
-        track.setLiked(newLikeState);
-        trackAdapter.notifyItemChanged(position);
-
-        String userId = firebaseService.getCurrentUser().getUid();
-        String trackId = String.valueOf(track.getId());
-
-        if (newLikeState) {
-            firebaseService.addLikedSong(userId, trackId, new FirebaseService.OnUpdateListener() {
-                @Override
-                public void onSuccess() {
-                    Toast.makeText(PlaylistViewActivity.this, "Added to favorites", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onFailure(String error) {
-                    Toast.makeText(PlaylistViewActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show();
-                    track.setLiked(false);
-                    trackAdapter.notifyItemChanged(position);
-                }
-            });
-        } else {
-            firebaseService.removeLikedSong(userId, trackId, new FirebaseService.OnUpdateListener() {
-                @Override
-                public void onSuccess() {
-                    Toast.makeText(PlaylistViewActivity.this, "Removed from favorites", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onFailure(String error) {
-                    Toast.makeText(PlaylistViewActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show();
-                    track.setLiked(true);
-                    trackAdapter.notifyItemChanged(position);
-                }
-            });
-        }
-    }
-
+    // =========================
+    // PLAY
+    // =========================
     private void playTrack(int position) {
-        if (tracks == null || tracks.isEmpty()) {
-            Toast.makeText(this, "No tracks to play", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        if (tracks.isEmpty()) return;
 
-        // Start music service
-        Intent serviceIntent = new Intent(this, MusicPlayerService.class);
-        startService(serviceIntent);
+        Intent intent = new Intent(this, MusicPlayerService.class);
+        startService(intent);
 
-        // Start full player activity with playlist data
-        Intent intent = new Intent(PlaylistViewActivity.this, FullPlayerActivity.class);
-        intent.putExtra("playlist_position", position);
+        Intent openPlayer = new Intent(this, FullPlayerActivity.class);
+        openPlayer.putExtra("tracks", new ArrayList<>(tracks));
+        openPlayer.putExtra("index", position);
 
-        // Pass the entire playlist as serializable
-        intent.putExtra("playlist_tracks", new ArrayList<>(tracks));
-        intent.putExtra("playlist_name", playlistName);
-        intent.putExtra("from_playlist", true);
-
-        startActivity(intent);
+        startActivity(openPlayer);
     }
 }

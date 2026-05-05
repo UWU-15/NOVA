@@ -1,46 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/trackItemContainer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:padding="12dp"
-    android:background="?android:attr/selectableItemBackground">
+    android:background="?attr/selectableItemBackground"
+    android:paddingVertical="10dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="12dp">
 
-    <ImageView
-        android:id="@+id/ivAlbumArt"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:scaleType="centerCrop" />
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/trackPlayCard"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        app:cardBackgroundColor="#A600FF"
+        app:cardCornerRadius="22dp"
+        app:cardElevation="4dp"
+        app:strokeWidth="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <LinearLayout
+        <ImageView
+            android:id="@+id/ivTrackPlayIcon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="1dp"
+            android:src="@drawable/ic_play" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/tvTrackTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_marginStart="12dp"
-        android:orientation="vertical">
+        android:layout_marginStart="14dp"
+        android:fontFamily="@font/zen_dots"
+        android:text="Song Title"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        app:layout_constraintEnd_toStartOf="@id/tvTrackDuration"
+        app:layout_constraintStart_toEndOf="@id/trackPlayCard"
+        app:layout_constraintTop_toTopOf="@id/trackPlayCard" />
 
-        <TextView
-            android:id="@+id/tvSongTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:text="Song Title" />
+    <TextView
+        android:id="@+id/tvTrackArtist"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:fontFamily="@font/zen_dots"
+        android:text="Artist Name"
+        android:textColor="#BC66FF"
+        android:textSize="11sp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        app:layout_constraintBottom_toBottomOf="@id/trackPlayCard"
+        app:layout_constraintEnd_toEndOf="@id/tvTrackTitle"
+        app:layout_constraintStart_toStartOf="@id/tvTrackTitle"
+        app:layout_constraintTop_toBottomOf="@id/tvTrackTitle" />
 
-        <TextView
-            android:id="@+id/tvSongArtist"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:text="Artist Name" />
+    <TextView
+        android:id="@+id/tvTrackDuration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:fontFamily="@font/zen_dots"
+        android:text="3:20"
+        android:textColor="#B3FFFFFF"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/trackPlayCard"
+        app:layout_constraintEnd_toStartOf="@id/ivTrackFavorite"
+        app:layout_constraintTop_toTopOf="@id/trackPlayCard" />
 
-    </LinearLayout>
+    <ImageView
+        android:id="@+id/ivTrackFavorite"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:src="@drawable/ic_liked"
+        app:layout_constraintBottom_toBottomOf="@id/trackPlayCard"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/trackPlayCard"
+        app:tint="#FFFFFF" />
 
-    <ImageButton
-        android:id="@+id/btnLikeButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:background="?android:attr/selectableItemBackground"
-        android:src="@android:drawable/btn_star_big_off" />
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

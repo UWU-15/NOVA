@@ -1,4 +1,3 @@
-// LibraryActivity.java
 package com.example.nova.activities;
 
 import android.content.Intent;
@@ -12,11 +11,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.nova.R;
 import com.example.nova.adapters.PlaylistAdapter;
-import com.example.nova.models.Playlist;
 import com.example.nova.services.FirebaseService;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 import java.util.List;
+import java.util.HashMap; // Добавлено
+import java.util.Map;    // Добавлено
 
 public class LibraryActivity extends AppCompatActivity {
 
@@ -33,7 +33,9 @@ public class LibraryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_library);
 
         firebaseService = FirebaseService.getInstance();
-        userId = firebaseService.getCurrentUser().getUid();
+        if (firebaseService.getCurrentUser() != null) {
+            userId = firebaseService.getCurrentUser().getUid();
+        }
 
         initViews();
         setupClickListeners();
@@ -66,8 +68,8 @@ public class LibraryActivity extends AppCompatActivity {
     }
 
     private void setupClickListeners() {
-        btnBack.setOnClickListener(v -> finish());
-        btnAddPlaylist.setOnClickListener(v -> showCreatePlaylistDialog());
+        if (btnBack != null) btnBack.setOnClickListener(v -> finish());
+        if (btnAddPlaylist != null) btnAddPlaylist.setOnClickListener(v -> showCreatePlaylistDialog());
     }
 
     private void loadPlaylists() {
@@ -78,8 +80,8 @@ public class LibraryActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(String error) {
-                Toast.makeText(LibraryActivity.this, "Error loading playlists: " + error,
+            public void onFailure(Exception e) { // Изменено со String на Exception
+                Toast.makeText(LibraryActivity.this, "Error: " + e.getMessage(),
                         Toast.LENGTH_SHORT).show();
             }
         });
@@ -96,28 +98,30 @@ public class LibraryActivity extends AppCompatActivity {
                 .setCancelable(true)
                 .create();
 
-        btnCloseDialog.setOnClickListener(v -> dialog.dismiss());
+        if (btnCloseDialog != null) btnCloseDialog.setOnClickListener(v -> dialog.dismiss());
 
-        btnCreatePlaylist.setOnClickListener(v -> {
-            String name = etPlaylistName.getText().toString().trim();
-            if (!name.isEmpty()) {
-                firebaseService.createPlaylist(userId, name, new FirebaseService.OnPlaylistListener() {
-                    @Override
-                    public void onSuccess(Playlist playlist) {
-                        playlistAdapter.addPlaylist(playlist);
-                        dialog.dismiss();
-                        Toast.makeText(LibraryActivity.this, "Playlist created", Toast.LENGTH_SHORT).show();
-                    }
+        if (btnCreatePlaylist != null) {
+            btnCreatePlaylist.setOnClickListener(v -> {
+                String name = etPlaylistName.getText().toString().trim();
+                if (!name.isEmpty()) {
+                    firebaseService.createPlaylist(userId, name, new FirebaseService.OnPlaylistListener() {
+                        @Override
+                        public void onSuccess() { // В FirebaseService OnPlaylistListener.onSuccess() без параметров
+                            loadPlaylists(); // Перезагружаем список
+                            dialog.dismiss();
+                            Toast.makeText(LibraryActivity.this, "Playlist created", Toast.LENGTH_SHORT).show();
+                        }
 
-                    @Override
-                    public void onFailure(String error) {
-                        Toast.makeText(LibraryActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show();
-                    }
-                });
-            } else {
-                etPlaylistName.setError("Playlist name is required");
-            }
-        });
+                        @Override
+                        public void onFailure(Exception e) { // Изменено на Exception
+                            Toast.makeText(LibraryActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    etPlaylistName.setError("Playlist name is required");
+                }
+            });
+        }
 
         dialog.show();
     }
@@ -147,16 +151,19 @@ public class LibraryActivity extends AppCompatActivity {
                 .setPositiveButton("Rename", (dialog, which) -> {
                     String newName = etPlaylistName.getText().toString().trim();
                     if (!newName.isEmpty()) {
-                        playlist.setName(newName);
-                        firebaseService.updateUserData(null, new FirebaseService.OnUpdateListener() {
+                        Map<String, Object> update = new HashMap<>();
+                        update.put("name", newName);
+
+                        // Используем Map вместо null, так как сервис ожидает данные
+                        firebaseService.updateUserData(update, new FirebaseService.OnUpdateListener() {
                             @Override
                             public void onSuccess() {
                                 loadPlaylists();
                             }
 
                             @Override
-                            public void onFailure(String error) {
-                                Toast.makeText(LibraryActivity.this, error, Toast.LENGTH_SHORT).show();
+                            public void onFailure(Exception e) { // Изменено на Exception
+                                Toast.makeText(LibraryActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
@@ -166,7 +173,6 @@ public class LibraryActivity extends AppCompatActivity {
     }
 
     private void deletePlaylist(Playlist playlist) {
-        // Implement delete functionality
-        Toast.makeText(this, "Delete: " + playlist.getName(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Delete functionality not implemented yet", Toast.LENGTH_SHORT).show();
     }
 }

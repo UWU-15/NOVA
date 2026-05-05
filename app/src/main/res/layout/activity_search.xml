@@ -11,7 +11,7 @@
         android:id="@+id/gradientBg"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:scaleType="fitXY"
+        android:scaleType="centerCrop"
         android:src="@drawable/gradient_bg_1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -19,22 +19,27 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/linesBottomRight"
-        android:layout_width="600dp"
-        android:layout_height="580dp"
-        android:layout_marginEnd="-230dp"
-        android:layout_marginBottom="-240dp"
-        android:alpha="1"
-        android:src="@drawable/lines2_1"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <ImageView
-        android:id="@+id/backButton"
+        android:id="@+id/linesTopRight"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginStart="120dp"
+        android:layout_marginTop="200dp"
+        android:alpha="0.2"
+        android:scaleX="1.55"
+        android:scaleY="1.2"
+        android:src="@drawable/lines2_1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="40dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="1dp"
+        android:scaleType="fitCenter"
         android:src="@drawable/ic_back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -44,37 +49,43 @@
         android:id="@+id/searchTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
+        android:layout_marginStart="8dp"
         android:fontFamily="@font/zen_dots"
-        android:text="Search"
+        android:text="@string/search"
         android:textColor="#FFFFFF"
-        android:textSize="30sp"
-        app:layout_constraintStart_toStartOf="@+id/backButton"
-        app:layout_constraintTop_toBottomOf="@+id/backButton" />
+        android:textSize="25sp"
+        android:maxLines="1"
+        app:layout_constraintBottom_toBottomOf="@id/btnBack"
+        app:layout_constraintStart_toEndOf="@id/btnBack"
+        app:layout_constraintTop_toTopOf="@id/btnBack" />
 
     <View
         android:id="@+id/titleUnderline"
-        android:layout_width="250dp"
-        android:layout_height="2dp"
+        android:layout_width="0dp"
+        android:layout_height="3dp"
         android:layout_marginTop="4dp"
         android:background="#A600FF"
-        app:layout_constraintStart_toStartOf="@+id/searchTitle"
-        app:layout_constraintTop_toBottomOf="@+id/searchTitle" />
+        app:layout_constraintEnd_toEndOf="@id/searchTitle"
+        app:layout_constraintStart_toStartOf="@id/searchTitle"
+        app:layout_constraintTop_toBottomOf="@id/searchTitle" />
 
     <EditText
         android:id="@+id/searchEditText"
         android:layout_width="0dp"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_marginHorizontal="25dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="24dp"
         android:background="@drawable/search_input_background"
         android:fontFamily="@font/zen_dots"
         android:hint="Songs, Albums, Artists..."
+        android:imeOptions="actionSearch"
+        android:inputType="text"
+        android:paddingVertical="14dp"
         android:paddingHorizontal="15dp"
-        android:textColor="#333333"
+        android:singleLine="true"
+        android:textColor="#FFFFFF"
         android:textColorHint="#888888"
         android:textSize="14sp"
-        android:singleLine="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/titleUnderline" />
@@ -83,10 +94,12 @@
         android:id="@+id/searchRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="20dp"
-        android:paddingHorizontal="25dp"
+        android:layout_marginTop="16dp"
+        android:clipToPadding="false"
+        android:paddingHorizontal="20dp"
+        android:paddingBottom="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/searchEditText"
-        tools:listitem="@layout/item_track"/>
+        tools:listitem="@layout/item_track" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

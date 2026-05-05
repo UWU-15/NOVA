@@ -1,80 +1,49 @@
-// LoadingActivity.java
 package com.example.nova.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.widget.Toast;
+import android.os.Looper;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.nova.R;
-import com.example.nova.models.User;
 import com.example.nova.services.FirebaseService;
 import com.google.firebase.auth.FirebaseUser;
 
 public class LoadingActivity extends AppCompatActivity {
-
-    private FirebaseService firebaseService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loading);
 
-        firebaseService = FirebaseService.getInstance();
+        checkAuth();
+        startAnimations();
+    }
 
-        new Handler().postDelayed(() -> {
-            FirebaseUser currentUser = firebaseService.getCurrentUser();
+    private void checkAuth() {
+
+        FirebaseUser currentUser = FirebaseService.getInstance().getCurrentUser();
+
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+
+            Intent intent;
 
             if (currentUser != null) {
-                // User is logged in → check if genres are selected
-                checkUserGenres(currentUser.getUid());
+                intent = new Intent(this, MainActivity.class);
             } else {
-                // No user → go to sign in
-                navigateToSignIn();
-            }
-        }, 2000);
-    }
-
-    private void checkUserGenres(String userId) {
-        firebaseService.getUserData(userId, new FirebaseService.OnUserDataListener() {
-            @Override
-            public void onSuccess(User user) {
-                if (user != null && user.getFavoriteGenres() != null && !user.getFavoriteGenres().isEmpty()) {
-                    // Genres are selected → go to MainActivity
-                    navigateToMain();
-                } else {
-                    // No genres selected → go to GenreActivity
-                    navigateToGenre();
-                }
+                intent = new Intent(this, SignInActivity.class);
             }
 
-            @Override
-            public void onFailure(String error) {
-                // Error loading user data → fallback to MainActivity
-                Toast.makeText(LoadingActivity.this, "Error loading user data: " + error, Toast.LENGTH_SHORT).show();
-                navigateToMain();
-            }
-        });
+            startActivity(intent);
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+            finish();
+
+        }, 700); // мягкий UX delay
     }
 
-    private void navigateToMain() {
-        Intent intent = new Intent(LoadingActivity.this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
-    }
-
-    private void navigateToSignIn() {
-        Intent intent = new Intent(LoadingActivity.this, SignInActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
-    }
-
-    private void navigateToGenre() {
-        Intent intent = new Intent(LoadingActivity.this, GenreActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
+    private void startAnimations() {
+        // пока оставляем заглушку )
     }
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,172 +7,160 @@
     android:layout_height="match_parent"
     android:background="#0F0C1D">
 
-    <LinearLayout
-        android:id="@+id/topBar"
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.2"
+        android:src="@drawable/gradient_bg_1"
+        android:scaleType="centerCrop"/>
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:padding="20dp"
-        app:layout_constraintTop_toTopOf="parent">
+        android:background="@android:color/transparent"
+        app:elevation="0dp">
 
-        <ImageView
-            android:id="@+id/Search"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:src="@drawable/ic_search"
-            app:tint="@color/white"/>
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:titleEnabled="false">
 
-        <ImageView
-            android:id="@+id/ic_library"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:layout_marginStart="24dp"
-            android:src="@drawable/ic_library"
-            app:tint="@color/white"/>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="120dp"
+                android:paddingBottom="60dp"
+                app:layout_collapseMode="parallax">
 
-        <ImageView
-            android:id="@+id/ic_liked"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:layout_marginStart="24dp"
-            android:src="@drawable/ic_liked"
-            app:tint="@color/white"/>
+                <ImageView
+                    android:id="@+id/ellipseGlow"
+                    android:layout_width="300dp"
+                    android:layout_height="300dp"
+                    android:src="@drawable/ellipse"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
+                <TextView
+                    android:id="@+id/tvMainTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="BLIND\nAUDIT"
+                    android:textColor="@color/white"
+                    android:textSize="32sp"
+                    android:fontFamily="@font/zen_dots"
+                    android:gravity="center"
+                    app:layout_constraintTop_toTopOf="@id/ellipseGlow"
+                    app:layout_constraintBottom_toBottomOf="@id/ellipseGlow"
+                    app:layout_constraintStart_toStartOf="@id/ellipseGlow"
+                    app:layout_constraintEnd_toEndOf="@id/ellipseGlow"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <ImageView
-            android:id="@+id/ic_profile"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:src="@drawable/ic_profile"/>
-    </LinearLayout>
+            <androidx.appcompat.widget.Toolbar
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                app:layout_collapseMode="pin"
+                app:contentInsetStart="0dp">
 
-    <ImageView
-        android:id="@+id/ellipseGlow"
-        android:layout_width="350dp"
-        android:layout_height="350dp"
-        android:layout_marginTop="1dp"
-        android:src="@drawable/ellipse"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.491"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/topBar" />
+                <LinearLayout
+                    android:id="@+id/topBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="20dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="BLIND\nAUDIT"
-        android:textColor="@color/white"
-        android:textSize="30sp"
-        android:fontFamily="@font/zen_dots"
-        android:gravity="center"
-        app:layout_constraintTop_toTopOf="@id/ellipseGlow"
-        app:layout_constraintBottom_toBottomOf="@id/ellipseGlow"
-        app:layout_constraintStart_toStartOf="@id/ellipseGlow"
-        app:layout_constraintEnd_toEndOf="@id/ellipseGlow"/>
+                    <ImageButton
+                        android:id="@+id/btnSearch"
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@drawable/ic_search"
+                        android:scaleType="fitCenter"
+                        app:tint="@color/white"/>
+
+                    <ImageButton
+                        android:id="@+id/btnLibrary"
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:layout_marginStart="15dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@drawable/ic_library"
+                        android:scaleType="fitCenter"
+                        app:tint="@color/white"/>
+
+                    <ImageButton
+                        android:id="@+id/btnLiked"
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:layout_marginStart="15dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@drawable/ic_liked"
+                        android:scaleType="fitCenter"
+                        app:tint="@color/white"/>
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"/>
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/ic_profile"
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:src="@drawable/ic_profile"
+                        app:shapeAppearanceOverlay="@style/CircleImage" />
+                </LinearLayout>
+            </androidx.appcompat.widget.Toolbar>
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="20dp"
+        android:layout_height="match_parent"
         android:background="@drawable/rounded_panel_bg"
-        app:layout_constraintTop_toBottomOf="@id/ellipseGlow"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:elevation="10dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="24dp">
+            android:orientation="vertical">
 
-            <TextView
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="15dp"
+                android:background="@drawable/top_shadow_gradient" />
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="RECOMMENDATIONS"
-                android:textColor="#A600FF"
-                android:textSize="24sp"
-                android:gravity="center"
-                android:fontFamily="@font/zen_dots"/>
+                android:orientation="vertical"
+                android:paddingHorizontal="24dp"
+                android:paddingBottom="40dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Songs"
-                android:textColor="@color/black"
-                android:textSize="22sp"
-                android:layout_marginTop="24dp"
-                android:fontFamily="@font/zen_dots"/>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/songsRecyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:nestedScrollingEnabled="false"
-                tools:listitem="@layout/item_track_main" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Albums"
-                android:textColor="@color/black"
-                android:textSize="22sp"
-                android:layout_marginTop="24dp"
-                android:fontFamily="@font/zen_dots"/>
-
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scrollbars="none"
-                android:layout_marginTop="16dp">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
+                <TextView
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:text="RECOMMENDATIONS"
+                    android:textColor="#A600FF"
+                    android:textSize="20sp"
+                    android:gravity="center"
+                    android:fontFamily="@font/zen_dots"/>
 
-                    <LinearLayout
-                        android:layout_width="150dp"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:background="#2E305F"
-                        android:padding="12dp"
-                        android:layout_marginEnd="16dp">
-                        <View android:layout_width="match_parent" android:layout_height="120dp" android:background="#9D00FF"/>
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="album 1"
-                            android:textColor="@color/white"
-                            android:fontFamily="@font/zen_dots"
-                            android:gravity="center"
-                            android:layout_marginTop="8dp"/>
-                    </LinearLayout>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/songsRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:nestedScrollingEnabled="false"
+                    tools:listitem="@layout/item_track_main" />
 
-                    <LinearLayout
-                        android:layout_width="150dp"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:background="#2E305F"
-                        android:padding="12dp">
-                        <View android:layout_width="match_parent" android:layout_height="120dp" android:background="#7ED321"/>
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="album 2"
-                            android:textColor="@color/white"
-                            android:fontFamily="@font/zen_dots"
-                            android:gravity="center"
-                            android:layout_marginTop="8dp"/>
-                    </LinearLayout>
-                </LinearLayout>
-            </HorizontalScrollView>
-
+            </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -10,8 +10,8 @@
         android:id="@+id/bgGradient"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:alpha="0.4"
         android:scaleType="centerCrop"
+        android:alpha="0.7"
         android:src="@drawable/gradient_bg_2" />
 
     <ImageButton
@@ -19,20 +19,33 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="20dp"
         android:background="?attr/selectableItemBackgroundBorderless"
+        android:scaleType="fitCenter"
         android:src="@drawable/ic_back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="#FFFFFF" />
 
+    <ImageView
+        android:id="@+id/albumGlow"
+        android:layout_width="350dp"
+        android:layout_height="350dp"
+        android:alpha="0.3"
+        android:src="@drawable/ellipse"
+        app:layout_constraintBottom_toBottomOf="@id/albumCard"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/albumCard" />
+
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/albumCard"
-        android:layout_width="240dp"
-        android:layout_height="240dp"
-        android:layout_marginTop="40dp"
-        app:cardCornerRadius="4dp"
-        app:cardElevation="15dp"
+        android:layout_width="220dp"
+        android:layout_height="220dp"
+        android:layout_marginTop="60dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="20dp"
+        app:strokeWidth="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -42,18 +55,21 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
+            android:src="@drawable/gradient_bg"
             tools:src="@android:drawable/ic_menu_gallery" />
     </com.google.android.material.card.MaterialCardView>
 
     <TextView
         android:id="@+id/tvAlbumName"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginHorizontal="30dp"
         android:fontFamily="@font/zen_dots"
-        android:text="Album 1"
+        android:gravity="center"
+        android:text="Album Title"
         android:textColor="#FFFFFF"
-        android:textSize="26sp"
+        android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/albumCard" />
@@ -62,33 +78,35 @@
         android:id="@+id/artistInfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="8dp"
         android:gravity="center_vertical"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvAlbumName">
 
         <com.google.android.material.imageview.ShapeableImageView
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:background="#7ED321"
-            app:shapeAppearanceOverlay="@style/CircleImage" />
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_profile"
+            app:shapeAppearanceOverlay="@style/CircleImage"
+            app:tint="#A600FF" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="10dp"
             android:fontFamily="@font/zen_dots"
-            android:text="Artist"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp" />
+            android:text="Artist Name"
+            android:textColor="#A600FF"
+            android:textSize="16sp" />
     </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/controls"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="20dp"
         android:paddingHorizontal="25dp"
         app:layout_constraintTop_toBottomOf="@id/artistInfo">
 
@@ -107,7 +125,7 @@
             android:id="@+id/btnRepeat"
             android:layout_width="35dp"
             android:layout_height="35dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginEnd="16dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_repeate"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -119,25 +137,34 @@
             android:id="@+id/btnShuffle"
             android:layout_width="35dp"
             android:layout_height="35dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginEnd="16dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_shuffle"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/fabPlayAlbum"
+            app:layout_constraintEnd_toStartOf="@id/cardPlayAlbum"
             app:layout_constraintTop_toTopOf="parent"
             app:tint="#FFFFFF" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabPlayAlbum"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_media_play"
-            app:backgroundTint="#A600FF"
-            app:fabCustomSize="50dp"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardPlayAlbum"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            app:cardBackgroundColor="#A600FF"
+            app:cardCornerRadius="27dp"
+            app:cardElevation="4dp"
+            app:strokeWidth="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="#FFFFFF" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageButton
+                android:id="@+id/fabPlayAlbum"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?attr/selectableItemBackground"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_play"/>
+        </com.google.android.material.card.MaterialCardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -145,9 +172,11 @@
         android:id="@+id/rvAlbumTracks"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="16dp"
+        android:clipToPadding="false"
+        android:paddingBottom="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/controls"
-        tools:listitem="@layout/item_track" />
+        tools:listitem="@layout/item_track_main" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

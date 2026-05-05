@@ -1,22 +1,25 @@
-// LikedSongsActivity.java
 package com.example.nova.activities;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.nova.R;
-import com.example.nova.adapters.DeezerTrackAdapter;
-import com.example.nova.api.DeezerApiService;
+import com.example.nova.adapters.SongAdapter;
+import com.example.nova.api.ApiService;
 import com.example.nova.api.RetrofitClient;
-import com.example.nova.models.DeezerTrack;
-import com.example.nova.models.User;
 import com.example.nova.services.FirebaseService;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -26,9 +29,13 @@ public class LikedSongsActivity extends AppCompatActivity {
     private ImageButton btnBack;
     private TextView likedTitle;
     private RecyclerView likedRecyclerView;
-    private DeezerTrackAdapter trackAdapter;
+    private TextView emptyState;
+
+    private SongAdapter trackAdapter;
+
     private FirebaseService firebaseService;
-    private List<DeezerTrack> likedTracks = new ArrayList<>();
+
+    private final List<DeezerTrack> likedTracks = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +43,9 @@ public class LikedSongsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_liked_songs);
 
         firebaseService = FirebaseService.getInstance();
+
         initViews();
+        setupRecycler();
         setupClickListeners();
         loadLikedSongs();
     }
@@ -45,19 +54,23 @@ public class LikedSongsActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
         likedTitle = findViewById(R.id.likedTitle);
         likedRecyclerView = findViewById(R.id.likedRecyclerView);
+        emptyState = findViewById(R.id.emptyState);
+    }
 
-        trackAdapter = new DeezerTrackAdapter();
+    private void setupRecycler() {
+        trackAdapter = new SongAdapter();
         trackAdapter.setDarkTheme(true);
-        trackAdapter.setOnTrackClickListener(new DeezerTrackAdapter.OnTrackClickListener() {
+
+        trackAdapter.setOnTrackClickListener(new SongAdapter.OnTrackClickListener() {
             @Override
             public void onTrackClick(DeezerTrack track, int position) {
-                Toast.makeText(LikedSongsActivity.this, "Playing: " + track.getTitle(),
+                Toast.makeText(LikedSongsActivity.this,
+                        "Play: " + track.getTitle(),
                         Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onLikeClick(DeezerTrack track, int position) {
-                // Unlike the song
                 removeLikedSong(track, position);
             }
         });
@@ -71,72 +84,109 @@ public class LikedSongsActivity extends AppCompatActivity {
     }
 
     private void loadLikedSongs() {
+        if (firebaseService.getCurrentUser() == null) return;
+
         String userId = firebaseService.getCurrentUser().getUid();
+
         firebaseService.getUserData(userId, new FirebaseService.OnUserDataListener() {
             @Override
-            public void onSuccess(User user) {
-                List<String> likedSongIds = user.getLikedSongs();
+            public void onSuccess(Map<String, Object> userData) {
+
+                List<String> likedSongIds = (List<String>) userData.get("likedSongs");
+
                 likedTracks.clear();
 
-                if (likedSongIds != null && !likedSongIds.isEmpty()) {
-                    // For each liked song ID, fetch from Deezer API
-                    for (String songId : likedSongIds) {
-                        fetchTrackDetails(songId);
-                    }
-                } else {
-                    trackAdapter.setTracks(likedTracks);
-                    Toast.makeText(LikedSongsActivity.this, "No liked songs yet", Toast.LENGTH_SHORT).show();
+                if (likedSongIds == null || likedSongIds.isEmpty()) {
+                    updateEmptyState(true);
+                    return;
+                }
+
+                updateEmptyState(false);
+
+                for (String id : likedSongIds) {
+                    fetchTrack(id);
                 }
             }
 
             @Override
-            public void onFailure(String error) {
-                Toast.makeText(LikedSongsActivity.this, "Error loading liked songs: " + error,
+            public void onFailure(Exception e) {
+                Toast.makeText(LikedSongsActivity.this,
+                        "Error loading: " + e.getMessage(),
                         Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void fetchTrackDetails(String trackId) {
-        DeezerApiService apiService = RetrofitClient.getInstance().getApiService();
-        apiService.getTrack(Long.parseLong(trackId)).enqueue(new Callback<DeezerTrack>() {
-            @Override
-            public void onResponse(Call<DeezerTrack> call, Response<DeezerTrack> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    DeezerTrack track = response.body();
-                    track.setLiked(true);
-                    likedTracks.add(track);
-                    trackAdapter.setTracks(likedTracks);
-                }
-            }
+    private void fetchTrack(String trackId) {
+        ApiService api = RetrofitClient.getInstance().getApiService();
 
-            @Override
-            public void onFailure(Call<DeezerTrack> call, Throwable t) {
-                // Handle error
-                Toast.makeText(LikedSongsActivity.this, "Error loading track: " + t.getMessage(),
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
+        try {
+            api.getTrack(Long.parseLong(trackId)).enqueue(new Callback<DeezerTrack>() {
+                @Override
+                public void onResponse(Call<DeezerTrack> call, Response<DeezerTrack> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+
+                        DeezerTrack track = response.body();
+                        track.setLiked(true);
+
+                        // защита от дублей
+                        for (DeezerTrack t : likedTracks) {
+                            if (t.getId() == track.getId()) return;
+                        }
+
+                        likedTracks.add(track);
+                        trackAdapter.setTracks(new ArrayList<>(likedTracks));
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<DeezerTrack> call, Throwable t) {
+                    // можно логировать
+                }
+            });
+
+        } catch (Exception ignored) {}
     }
 
     private void removeLikedSong(DeezerTrack track, int position) {
+        if (firebaseService.getCurrentUser() == null) return;
+
         String userId = firebaseService.getCurrentUser().getUid();
-        String trackId = String.valueOf(track.getId()); // Convert long to String
+        String trackId = String.valueOf(track.getId());
 
         firebaseService.removeLikedSong(userId, trackId, new FirebaseService.OnUpdateListener() {
             @Override
             public void onSuccess() {
-                // Remove from local list and update UI
-                likedTracks.remove(position);
-                trackAdapter.setTracks(likedTracks);
-                Toast.makeText(LikedSongsActivity.this, "Removed from favorites",
+
+                if (position >= 0 && position < likedTracks.size()) {
+                    likedTracks.remove(position);
+                }
+
+                trackAdapter.setTracks(new ArrayList<>(likedTracks));
+
+                updateEmptyState(likedTracks.isEmpty());
+
+                Toast.makeText(LikedSongsActivity.this,
+                        "Removed",
                         Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onFailure(String error) {
-                Toast.makeText(LikedSongsActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show();
+            public void onFailure(Exception e) {
+                Toast.makeText(LikedSongsActivity.this,
+                        "Error: " + e.getMessage(),
+                        Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void updateEmptyState(boolean isEmpty) {
+        if (isEmpty) {
+            emptyState.setVisibility(View.VISIBLE);
+            likedRecyclerView.setVisibility(View.GONE);
+        } else {
+            emptyState.setVisibility(View.GONE);
+            likedRecyclerView.setVisibility(View.VISIBLE);
+        }
     }
 }
